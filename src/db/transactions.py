@@ -1,6 +1,16 @@
 from sqlalchemy.orm import sessionmaker
 from models import User, Magazine
 from contextlib import contextmanager
+import random, string
+
+def generate_random_email(domain="example.com", length=10):
+    # Generate a random string of letters and digits for the email username
+    username = ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
+    
+    # Construct the email address
+    email = f"{username}@{domain}"
+    
+    return email
 
 class DBTransactions:
 
@@ -24,9 +34,19 @@ class DBTransactions:
             if not user:
                 return False
             return user
-
-    def register(self, username: str, email: str, password: str, address: str = None, phone: int = None):
+    
+    def authenticate_user_by_username(self, username: str, password: str):
         with self.session_scope() as db_session:
+            user = db_session.query(User).filter(User.username == username, User.password == password).first()
+            if not user:
+                return False
+            return user
+
+
+    def register(self, username: str, password: str, email: str = None, address: str = None, phone: int = None):
+        with self.session_scope() as db_session:
+            if email is None:
+                email = generate_random_email()
             db_session.add(User(username=username, email=email, password=password, address=address, phone=phone))
             db_session.commit()
             db_session.close()

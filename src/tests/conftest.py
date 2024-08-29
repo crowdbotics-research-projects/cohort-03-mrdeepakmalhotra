@@ -5,9 +5,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.main import app
-from app.db.base import Base
-from app.db.session import get_db
+from main import app
+from models import Base
+from db.database import get_db
 
 from .utils import create_user, login_user
 
@@ -31,6 +31,17 @@ app.dependency_overrides[get_db] = override_get_db
 
 # Create the database tables
 Base.metadata.create_all(bind=engine)
+
+def refresh_db():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+@pytest.fixture(scope="function", autouse=True)
+def setup_and_teardown():
+    # Refresh the database before each test
+    refresh_db()
+    yield
+    # Optionally, you can add teardown code here if needed
 
 # Fixture for the test client
 @pytest.fixture(scope="module")

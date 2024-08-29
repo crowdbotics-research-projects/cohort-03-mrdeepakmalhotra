@@ -28,9 +28,9 @@ class Magazine(Base):
     description = Column(String(200), nullable=False)
     base_price = Column(Integer, nullable=False)
     discount = Column(Float, nullable=False, default=10.0)
-    monthly_discount = Column(Float, nullable=False, default=10.0)
-    quarterly_discount = Column(Float, nullable=True)
-    yearly_discount = Column(Float, nullable=True)
+    discount_half_yearly = Column(Float, nullable=False, default=10.0)
+    discount_quarterly = Column(Float, nullable=True)
+    discount_annual = Column(Float, nullable=True)
 
 class Plan(Base):
     __tablename__ = 'plans'
@@ -57,8 +57,9 @@ class Subscription(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     magazine_id = Column(Integer, ForeignKey('magazines.id'), nullable=False)
     plan_id = Column(Integer, ForeignKey('plans.id'), nullable=False)
-    price_at_renewal = Column(Integer, nullable=False)
-    next_renewal_date = Column(Date, nullable=False)
+    price = Column(Integer, nullable=False)
+    price_at_renewal = Column(Integer, nullable=False, default=0)
+    next_renewal_date = Column(Date, nullable=False, default='2021-01-01')
     is_active = Column(Boolean, nullable=False, default=True)
 
     user = relationship("User", backref="subscriptions")
