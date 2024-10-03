@@ -11,3 +11,5 @@ pydantic-settings
 passlib
 python-jose
 pydantic[email]
+PyJWT==2.9.0
+pytest==8.3.3
